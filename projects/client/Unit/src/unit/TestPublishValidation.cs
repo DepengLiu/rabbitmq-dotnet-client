@@ -1,4 +1,4 @@
-﻿// This source code is dual-licensed under the Apache License, version
+// This source code is dual-licensed under the Apache License, version
 // 2.0, and the Mozilla Public License, version 1.1.
 //
 // The APL v2.0:
@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -35,15 +35,25 @@
 //  The Original Code is RabbitMQ.
 //
 //  The Initial Developer of the Original Code is Pivotal Software, Inc.
-//  Copyright (c) 2013-2014 Pivotal Software, Inc.  All rights reserved.
+//  Copyright (c) 2007-2020 Pivotal Software, Inc.  All rights reserved.
 //---------------------------------------------------------------------------
 
-namespace System
+using NUnit.Framework;
+using System;
+using System.Threading;
+using RabbitMQ.Client;
+
+namespace RabbitMQ.Client.Unit
 {
-#if (NETFX_CORE)
-    public interface ICloneable
+    [TestFixture]
+    public class TestPublishValidation : IntegrationFixture
     {
-        object Clone();
+
+        [Test]
+        public void TestNullRoutingKeyIsRejected()
+        {
+            var ch = Conn.CreateModel();
+            Assert.Throws(typeof(ArgumentNullException), () => ch.BasicPublish("", null, null, encoding.GetBytes("msg")));
+        }
     }
-#endif
 }

@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -38,26 +38,23 @@
 //  Copyright (c) 2007-2016 Pivotal Software, Inc.  All rights reserved.
 //---------------------------------------------------------------------------
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using ApprovalTests;
+using ApprovalTests.Reporters;
+using NUnit.Framework;
+using PublicApiGenerator;
 
-// General Information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("RabbitMQ.Client.WinRT Unit Tests")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Pivotal Software, Inc.")]
-[assembly: AssemblyProduct("RabbitMQ.Client.WinRT")]
-[assembly: AssemblyCopyright("Copyright © 2007-2016 Pivotal Software, Inc.")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
+namespace RabbitMQ.Client.Unit
+{
+    [TestFixture]
+    [UseReporter(typeof(QuietReporter))]
+    public class APIApproval
+    {
+        [Test]
+        public void Approve()
+        {
+            var publicApi = ApiGenerator.GeneratePublicApi(typeof(ConnectionFactory).Assembly, excludeAttributes: new[] { "System.Runtime.Versioning.TargetFrameworkAttribute" });
+            Approvals.Verify(publicApi);
+        }
+    }
+}
 
-// Setting ComVisible to false makes the types in this assembly not visible
-// to COM components.  If you need to access a type in this assembly from
-// COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("42d39d91-847a-44fa-9875-a508ae59bda6")]

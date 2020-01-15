@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -62,6 +62,7 @@ namespace RabbitMQ.Client.Unit
             IDictionary<string, object> t = new Dictionary<string, object>();
             t["string"] = "Hello";
             t["int"] = 1234;
+            t["uint"] = 1234u;
             t["decimal"] = 12.34m;
             t["timestamp"] = new AmqpTimestamp(0);
             IDictionary<string, object> t2 = new Dictionary<string, object>();
@@ -75,6 +76,7 @@ namespace RabbitMQ.Client.Unit
             IDictionary<string, object> nt = WireFormatting.ReadTable(Reader(Contents(w)));
             Assert.AreEqual(Encoding.UTF8.GetBytes("Hello"), nt["string"]);
             Assert.AreEqual(1234, nt["int"]);
+            Assert.AreEqual(1234u, nt["uint"]);
             Assert.AreEqual(12.34m, nt["decimal"]);
             Assert.AreEqual(0, ((AmqpTimestamp)nt["timestamp"]).UnixTime);
             IDictionary<string, object> nt2 = (IDictionary<string, object>)nt["fieldtable"];
@@ -119,6 +121,7 @@ namespace RabbitMQ.Client.Unit
         {
             NetworkBinaryWriter w = Writer();
             IDictionary<string, object> t = new Dictionary<string, object>();
+            t["B"] = (byte)255;
             t["b"] = (sbyte)-128;
             t["d"] = (double)123;
             t["f"] = (float)123;
@@ -130,6 +133,7 @@ namespace RabbitMQ.Client.Unit
             t["V"] = null;
             WireFormatting.WriteTable(w, t);
             IDictionary nt = (IDictionary)WireFormatting.ReadTable(Reader(Contents(w)));
+            Assert.AreEqual(typeof(byte), nt["B"].GetType()); Assert.AreEqual((byte)255, nt["B"]);
             Assert.AreEqual(typeof(sbyte), nt["b"].GetType()); Assert.AreEqual((sbyte)-128, nt["b"]);
             Assert.AreEqual(typeof(double), nt["d"].GetType()); Assert.AreEqual((double)123, nt["d"]);
             Assert.AreEqual(typeof(float), nt["f"].GetType()); Assert.AreEqual((float)123, nt["f"]);

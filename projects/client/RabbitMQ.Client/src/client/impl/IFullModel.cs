@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -298,6 +298,12 @@ namespace RabbitMQ.Client.Impl
             string mechanism,
             byte[] response,
             string locale);
+
+        ///<summary>Used to send a Conection.UpdateSecret method. Called by the
+        ///public UpdateSecret method.
+        ///</summary>
+        [AmqpMethodMapping(null, "connection", "update-secret")]
+        void _Private_UpdateSecret(byte[] newSecret, string reason);
 
         ///<summary>Used to send a Exchange.Bind method. Called by the
         ///public bind method.

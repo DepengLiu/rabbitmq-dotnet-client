@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -407,7 +407,7 @@ namespace RabbitMQ.Client.Apigen
             EmitLine("//   you may not use this file except in compliance with the License.");
             EmitLine("//   You may obtain a copy of the License at");
             EmitLine("//");
-            EmitLine("//       http://www.apache.org/licenses/LICENSE-2.0");
+            EmitLine("//       https://www.apache.org/licenses/LICENSE-2.0");
             EmitLine("//");
             EmitLine("//   Unless required by applicable law or agreed to in writing, software");
             EmitLine("//   distributed under the License is distributed on an \"AS IS\" BASIS,");
@@ -422,7 +422,7 @@ namespace RabbitMQ.Client.Apigen
             EmitLine("//   The contents of this file are subject to the Mozilla Public License");
             EmitLine("//   Version 1.1 (the \"License\"); you may not use this file except in");
             EmitLine("//   compliance with the License. You may obtain a copy of the License at");
-            EmitLine("//   http://www.rabbitmq.com/mpl.html");
+            EmitLine("//   https://www.rabbitmq.com/mpl.html");
             EmitLine("//");
             EmitLine("//   Software distributed under the License is distributed on an \"AS IS\"");
             EmitLine("//   basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the");
@@ -578,7 +578,15 @@ namespace RabbitMQ.Client.Apigen
                 EmitLine("      set {");
                 if (!IsBoolean(f))
                 {
-                    EmitLine("        m_" + MangleMethod(f.Name) + "_present = true;");
+                    if (IsReferenceType(f))
+                    {
+                        EmitLine("        m_" + MangleMethod(f.Name) + "_present = value != null;");
+
+                    }
+                    else
+                    {
+                        EmitLine("        m_" + MangleMethod(f.Name) + "_present = true;");
+                    }
                 }
                 EmitLine("        m_" + MangleMethod(f.Name) + " = value;");
                 EmitLine("      }");

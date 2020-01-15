@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -368,7 +368,7 @@ namespace RabbitMQ.Client.Framing.Impl
             table["platform"] = Encoding.UTF8.GetBytes(".NET");
             table["copyright"] = Encoding.UTF8.GetBytes("Copyright (c) 2007-2016 Pivotal Software, Inc.");
             table["information"] = Encoding.UTF8.GetBytes("Licensed under the MPL.  " +
-                                                          "See http://www.rabbitmq.com/");
+                                                          "See https://www.rabbitmq.com/");
             return table;
         }
 
@@ -1015,15 +1015,32 @@ entry.ToString());
                 m_hasDisposedHeartBeatReadTimer = false;
                 m_hasDisposedHeartBeatWriteTimer = false;
 #if NETFX_CORE
-                _heartbeatWriteTimer = new Timer(HeartbeatWriteTimerCallback);
-                _heartbeatReadTimer = new Timer(HeartbeatReadTimerCallback);
-                _heartbeatWriteTimer.Change(200, (int)m_heartbeatTimeSpan.TotalMilliseconds);
-                _heartbeatReadTimer.Change(200, (int)m_heartbeatTimeSpan.TotalMilliseconds);
+                lock(_heartBeatWriteLock)
+                {
+                    _heartbeatWriteTimer = new Timer(HeartbeatWriteTimerCallback);
+                    _heartbeatWriteTimer.Change(200, Timeout.Infinite);
+                }
+
+                lock (_heartBeatReadLock)
+                {
+                    _heartbeatReadTimer = new Timer(HeartbeatReadTimerCallback);
+
+                    _heartbeatReadTimer.Change(300, Timeout.Infinite);
+                }
 #else
-                _heartbeatWriteTimer = new Timer(HeartbeatWriteTimerCallback, null, 200, (int)m_heartbeatTimeSpan.TotalMilliseconds);
-                _heartbeatReadTimer = new Timer(HeartbeatReadTimerCallback, null, 200, (int)m_heartbeatTimeSpan.TotalMilliseconds);
-                _heartbeatWriteTimer.Change(TimeSpan.FromMilliseconds(200), m_heartbeatTimeSpan);
-                _heartbeatReadTimer.Change(TimeSpan.FromMilliseconds(200), m_heartbeatTimeSpan);
+                lock (_heartBeatWriteLock)
+                {
+                    _heartbeatWriteTimer = new Timer(HeartbeatWriteTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
+
+                    _heartbeatWriteTimer.Change(200, Timeout.Infinite);
+                }
+
+                lock (_heartBeatReadLock)
+                {
+                    _heartbeatReadTimer = new Timer(HeartbeatReadTimerCallback, null, Timeout.Infinite, Timeout.Infinite);
+
+                    _heartbeatReadTimer.Change(300, Timeout.Infinite);
+                }
 #endif
             }
         }
@@ -1050,7 +1067,9 @@ entry.ToString());
                 {
                     return;
                 }
+
                 bool shouldTerminate = false;
+
                 try
                 {
                     if (!m_closed)
@@ -1111,37 +1130,32 @@ entry.ToString());
                 {
                     return;
                 }
-                bool shouldTerminate = false;
-                try
-                {
-                    try
-                    {
-                        if (!m_closed)
-                        {
-                            WriteFrame(m_heartbeatFrame);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        HandleMainLoopException(new ShutdownEventArgs(
-                            ShutdownInitiator.Library,
-                            0,
-                            "End of stream",
-                            e));
-                        shouldTerminate = true;
-                    }
+            }
 
-                    if (m_closed || shouldTerminate)
-                    {
-                        TerminateMainloop();
-                        FinishClose();
-                    }
-                }
-                catch (ObjectDisposedException)
+            try
+            {
+                if (!m_closed)
                 {
-                    // timer is already disposed,
-                    // e.g. due to shutdown
-                } /**/
+                    WriteFrame(m_heartbeatFrame);
+                }
+            }
+            catch (ObjectDisposedException)
+            {
+                // timer is already disposed,
+                // e.g. due to shutdown
+            }
+            catch (Exception)
+            {
+                // ignore, let the read callback detect
+                // peer unavailability. See rabbitmq/rabbitmq-dotnet-client#638 for details.
+            }
+
+            lock(_heartBeatWriteLock)
+            {
+                if(m_closed == false && _heartbeatWriteTimer != null)
+                {
+                    _heartbeatWriteTimer.Change((int)m_heartbeatTimeSpan.TotalMilliseconds, Timeout.Infinite);
+                }
             }
         }
 
@@ -1207,6 +1221,11 @@ entry.ToString());
             m_frameHandler.WriteFrameSet(f);
         }
 
+        public void UpdateSecret(string newSecret, string reason)
+        {
+            m_model0.UpdateSecret(newSecret, reason);
+        }
+
         ///<summary>API-side invocation of connection abort.</summary>
         public void Abort()
         {
@@ -1226,9 +1245,21 @@ entry.ToString());
         }
 
         ///<summary>API-side invocation of connection abort with timeout.</summary>
+        public void Abort(TimeSpan timeout)
+        {
+            Abort(Constants.ReplySuccess, "Connection close forced", Convert.ToInt32(timeout.TotalMilliseconds));
+        }
+
+        ///<summary>API-side invocation of connection abort with timeout.</summary>
         public void Abort(ushort reasonCode, string reasonText, int timeout)
         {
             Abort(reasonCode, reasonText, ShutdownInitiator.Application, timeout);
+        }
+
+        ///<summary>API-side invocation of connection abort with timeout.</summary>
+        public void Abort(ushort reasonCode, string reasonText, TimeSpan timeout)
+        {
+            Abort(reasonCode, reasonText, ShutdownInitiator.Application, Convert.ToInt32(timeout.TotalMilliseconds));
         }
 
         ///<summary>API-side invocation of connection.close.</summary>

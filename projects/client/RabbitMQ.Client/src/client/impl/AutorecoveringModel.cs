@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -575,6 +575,11 @@ namespace RabbitMQ.Client.Impl
             IBasicProperties basicProperties,
             byte[] body)
         {
+            if (routingKey == null)
+            {
+                throw new ArgumentNullException(nameof(routingKey));
+            }
+
             m_delegate._Private_BasicPublish(exchange, routingKey, mandatory,
                 basicProperties, body);
         }
@@ -646,13 +651,18 @@ namespace RabbitMQ.Client.Impl
                 response, locale);
         }
 
+        public void _Private_UpdateSecret(byte[] newSecret, string reason)
+        {
+            m_delegate._Private_UpdateSecret(newSecret, reason);
+        }
+
         public void _Private_ExchangeBind(string destination,
             string source,
             string routingKey,
             bool nowait,
             IDictionary<string, object> arguments)
         {
-            _Private_ExchangeBind(destination, source, routingKey,
+            m_delegate._Private_ExchangeBind(destination, source, routingKey,
                 nowait, arguments);
         }
 
@@ -665,7 +675,7 @@ namespace RabbitMQ.Client.Impl
             bool nowait,
             IDictionary<string, object> arguments)
         {
-            _Private_ExchangeDeclare(exchange, type, passive,
+            m_delegate._Private_ExchangeDeclare(exchange, type, passive,
                 durable, autoDelete, @internal,
                 nowait, arguments);
         }
@@ -674,7 +684,7 @@ namespace RabbitMQ.Client.Impl
             bool ifUnused,
             bool nowait)
         {
-            _Private_ExchangeDelete(exchange, ifUnused, nowait);
+            m_delegate._Private_ExchangeDelete(exchange, ifUnused, nowait);
         }
 
         public void _Private_ExchangeUnbind(string destination,
@@ -693,7 +703,7 @@ namespace RabbitMQ.Client.Impl
             bool nowait,
             IDictionary<string, object> arguments)
         {
-            _Private_QueueBind(queue, exchange, routingKey,
+            m_delegate._Private_QueueBind(queue, exchange, routingKey,
                 nowait, arguments);
         }
 
@@ -805,6 +815,11 @@ namespace RabbitMQ.Client.Impl
             IBasicProperties basicProperties,
             byte[] body)
         {
+            if (routingKey == null)
+            {
+                throw new ArgumentNullException(nameof(routingKey));
+            }
+
             m_delegate.BasicPublish(exchange,
                 routingKey,
                 mandatory,

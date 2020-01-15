@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -102,10 +102,9 @@ namespace RabbitMQ.Client
     public sealed class ConnectionFactory : ConnectionFactoryBase, IAsyncConnectionFactory
     {
         /// <summary>
-        /// Default value for the desired maximum channel number, with zero meaning unlimited (value: 0).
+        /// Default value for the desired maximum channel number. Default: 2047.
         /// </summary>
-        /// <remarks>PLEASE KEEP THIS MATCHING THE DOC ABOVE.</remarks>
-        public const ushort DefaultChannelMax = 0;
+        public const ushort DefaultChannelMax = 2047;
 
         /// <summary>
         /// Default value for connection attempt timeout, in milliseconds.
@@ -113,37 +112,33 @@ namespace RabbitMQ.Client
         public const int DefaultConnectionTimeout = 30 * 1000;
 
         /// <summary>
-        /// Default value for the desired maximum frame size, with zero meaning unlimited (value: 0).
+        /// Default value for the desired maximum frame size. Default is 0 ("no limit").
         /// </summary>
-        /// <remarks>PLEASE KEEP THIS MATCHING THE DOC ABOVE.</remarks>
         public const uint DefaultFrameMax = 0;
 
         /// <summary>
-        /// Default value for desired heartbeat interval, in seconds, with zero meaning none (value: 60).
+        /// Default value for desired heartbeat interval, in seconds. Default is 60,
+        /// 0 means "heartbeats are disabled".
         /// </summary>
-        /// <remarks>PLEASE KEEP THIS MATCHING THE DOC ABOVE.</remarks>
         public const ushort DefaultHeartbeat = 60; //
 
         /// <summary>
         /// Default password (value: "guest").
         /// </summary>
-        /// <remarks>PLEASE KEEP THIS MATCHING THE DOC ABOVE.</remarks>
         public const string DefaultPass = "guest";
 
         /// <summary>
         /// Default user name (value: "guest").
         /// </summary>
-        /// <remarks>PLEASE KEEP THIS MATCHING THE DOC ABOVE.</remarks>
         public const string DefaultUser = "guest";
 
         /// <summary>
         /// Default virtual host (value: "/").
         /// </summary>
-        /// <remarks> PLEASE KEEP THIS MATCHING THE DOC ABOVE.</remarks>
         public const string DefaultVHost = "/";
 
         /// <summary>
-        /// The default AMQP URI SSL protocols.
+        /// TLS versions enabled by default: TLSv1.2, v1.1, v1.0.
         /// </summary>
         public static SslProtocols DefaultAmqpUriSslProtocols { get; set; } =
             SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
@@ -164,6 +159,14 @@ namespace RabbitMQ.Client
         ///  SASL auth mechanisms to use.
         /// </summary>
         public IList<AuthMechanismFactory> AuthMechanisms { get; set; } = DefaultAuthMechanisms;
+
+        /// <summary>
+        /// Address family used by default.
+        /// Use <see cref="System.Net.Sockets.AddressFamily.InterNetwork" /> to force to IPv4.
+        /// Use <see cref="System.Net.Sockets.AddressFamily.InterNetworkV6" /> to force to IPv6.
+        /// Or use <see cref="System.Net.Sockets.AddressFamily.Unknown" /> to attempt both IPv6 and IPv4.
+        /// </summary>
+        public static System.Net.Sockets.AddressFamily DefaultAddressFamily { get; set; }
 
         /// <summary>
         /// Set to false to disable automatic connection recovery.

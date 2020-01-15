@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -298,12 +298,12 @@ namespace RabbitMQ.Client.Impl
         {
             try
             {
-                socket.ConnectAsync(endpoint.HostName, endpoint.Port)
-                      .TimeoutAfter(timeout)
-                      .ConfigureAwait(false)
-                      // this ensures exceptions aren't wrapped in an AggregateException
-                      .GetAwaiter()
-                      .GetResult();
+               socket.ConnectAsync(endpoint.HostName, endpoint.Port)
+                    .TimeoutAfter(timeout)
+                    .ConfigureAwait(false)
+                    // this ensures exceptions aren't wrapped in an AggregateException
+                    .GetAwaiter()
+                    .GetResult();
             }
             catch (ArgumentException e)
             {

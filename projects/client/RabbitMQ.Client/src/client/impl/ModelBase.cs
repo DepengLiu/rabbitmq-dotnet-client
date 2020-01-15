@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -47,6 +47,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 #if (NETFX_CORE)
@@ -1123,6 +1124,10 @@ namespace RabbitMQ.Client.Impl
             byte[] response,
             string locale);
 
+        public abstract void _Private_UpdateSecret(
+            byte[] @newSecret,
+            string @reason);
+
         public abstract void _Private_ExchangeBind(string destination,
             string source,
             string routingKey,
@@ -1280,6 +1285,11 @@ namespace RabbitMQ.Client.Impl
             IBasicProperties basicProperties,
             byte[] body)
         {
+            if (routingKey == null)
+            {
+                throw new ArgumentNullException(nameof(routingKey));
+            }
+
             if (basicProperties == null)
             {
                 basicProperties = CreateBasicProperties();
@@ -1300,6 +1310,21 @@ namespace RabbitMQ.Client.Impl
                 mandatory,
                 basicProperties,
                 body);
+        }
+
+        public void UpdateSecret(string newSecret, string reason)
+        {
+            if (newSecret == null)
+            {
+                throw new ArgumentNullException(nameof(newSecret));
+            }
+
+            if (reason == null)
+            {
+                throw new ArgumentNullException(nameof(reason));
+            }
+
+            _Private_UpdateSecret(Encoding.UTF8.GetBytes(newSecret), reason);
         }
 
         public abstract void BasicQos(uint prefetchSize,

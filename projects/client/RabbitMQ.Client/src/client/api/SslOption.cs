@@ -10,7 +10,7 @@
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
 //
-//       http://www.apache.org/licenses/LICENSE-2.0
+//       https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@
 //  The contents of this file are subject to the Mozilla Public License
 //  Version 1.1 (the "License"); you may not use this file except in
 //  compliance with the License. You may obtain a copy of the License
-//  at http://www.mozilla.org/MPL/
+//  at https://www.mozilla.org/MPL/
 //
 //  Software distributed under the License is distributed on an "AS IS"
 //  basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
@@ -38,7 +38,6 @@
 //  Copyright (c) 2007-2016 Pivotal Software, Inc.  All rights reserved.
 //---------------------------------------------------------------------------
 
-using System;
 
 #if !NETFX_CORE
 using System.Net.Security;
@@ -142,6 +141,13 @@ namespace RabbitMQ.Client
             }
             set { _certificateCollection = value; }
         }
+
+        /// <summary>
+        /// Attempts to check certificate revocation status. Default is false. True if peer certificate should be
+        /// checked for revocation, false otherwise.
+        /// </summary>
+        /// <remarks>Uses the built-in .NET mechanics for checking a certificate against CRLs.</remarks>
+        public bool CheckCertificateRevocation { get; set; }
 #endif
 
         /// <summary>
